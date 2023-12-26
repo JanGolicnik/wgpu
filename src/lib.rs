@@ -1,4 +1,8 @@
 pub mod beginner;
 
-#[cfg(target_arch = "wasm32")]
-use wasm_bindgen::prelude::*;
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+struct Vertex {
+    position: [f32; 3],
+    color: [f32; 3],
+}
