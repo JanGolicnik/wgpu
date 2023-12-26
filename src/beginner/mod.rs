@@ -1,4 +1,5 @@
 use winit::{
+    dpi::PhysicalPosition,
     event::{ElementState, Event, KeyboardInput, WindowEvent},
     event_loop::{ControlFlow, EventLoop},
     window::{Window, WindowBuilder},
@@ -14,6 +15,7 @@ struct State {
     config: wgpu::SurfaceConfiguration,
     size: winit::dpi::PhysicalSize<u32>,
     window: Window,
+    mouse_pos: PhysicalPosition<f64>,
 }
 
 impl State {
@@ -80,6 +82,7 @@ impl State {
             queue,
             config,
             size,
+            mouse_pos: PhysicalPosition::new(0.0f64, 0.0f64),
         }
     }
 
@@ -114,7 +117,6 @@ impl State {
             .create_command_encoder(&wgpu::CommandEncoderDescriptor {
                 label: Some("Render Encoder"),
             });
-
         {
             let render_pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
                 label: Some("Render Pass"),
@@ -123,9 +125,9 @@ impl State {
                     resolve_target: None,
                     ops: wgpu::Operations {
                         load: wgpu::LoadOp::Clear(wgpu::Color {
-                            r: 0.1,
-                            g: 0.2,
-                            b: 0.3,
+                            r: self.mouse_pos.x,
+                            g: self.mouse_pos.y,
+                            b: self.mouse_pos.x * self.mouse_pos.y,
                             a: 1.0,
                         }),
                         store: wgpu::StoreOp::Store,
@@ -196,6 +198,11 @@ pub async fn run() {
                     WindowEvent::Resized(physical_size) => state.resize(*physical_size),
                     WindowEvent::ScaleFactorChanged { new_inner_size, .. } => {
                         state.resize(**new_inner_size)
+                    }
+                    WindowEvent::CursorMoved { position, .. } => {
+                        state.mouse_pos = *position;
+                        state.mouse_pos.x /= state.size.width as f64;
+                        state.mouse_pos.y /= state.size.height as f64;
                     }
                     _ => {}
                 }
