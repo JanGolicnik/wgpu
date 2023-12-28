@@ -5,10 +5,12 @@ use winit::{
 };
 
 mod camera;
+mod camera_controller;
 mod state;
 mod texture;
 mod vertex;
 
+use camera::{Camera, CameraUniform};
 use state::State;
 use vertex::Vertex;
 
